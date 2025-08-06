@@ -1,0 +1,25 @@
+# Python packaging/build
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.venv/
+.env/
+.direnv/
+
+# PyCache
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+*-transcript.txt
+*-deepcast.md
+output/ 
