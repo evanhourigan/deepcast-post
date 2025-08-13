@@ -43,8 +43,16 @@ This is the diarized transcript of a podcast episode. I want a deep, structured 
 Please format the output in **Markdown**, using:
 - `##` for section headings  
 - `**Speaker Name:**` for speaker notes  
-- Bulleted lists  
-- Timestamps in `[mm:ss]` or `[hh:mm:ss]` format where appropriate.
+- Bulleted lists with consistent formatting
+- Timestamps in `[mm:ss]` or `[hh:mm:ss]` format where appropriate
+
+**CRITICAL FORMATTING RULES FOR NOTION COMPATIBILITY:**
+- Use `- **Label:** Text` format for bullet points with labels
+- Do NOT use inline bullet points like `**Label:** * Text * More text`
+- Keep bullet points simple: one label per bullet, one description per bullet
+- Use proper markdown: `**bold**` for emphasis, `- ` for lists
+- Ensure all markdown syntax is properly closed and escaped
+- Use consistent spacing and formatting throughout
 
 End with a 5–7 bullet executive summary suitable for a slide or internal briefing.
 
