@@ -23,3 +23,8 @@ Thumbs.db
 *-transcript.txt
 *-deepcast.md
 output/ 
+
+# Coverage data
+.coverage
+coverage.xml
+htmlcov/

@@ -89,7 +89,7 @@ deepcast path/to/transcript.txt
 The tool will:
 
 1. Load the specified transcript file
-2. Generate a deepcast breakdown using OpenAI's GPT-3.5-turbo
+2. Generate a deepcast breakdown using OpenAI's GPT-4o-mini
 3. Save the output as `{transcript}-deepcast.md`
 
 ### Command Line Options
@@ -143,12 +143,17 @@ The tool uses the following default settings:
 # Install development dependencies
 poetry install
 
-# Run tests (when implemented)
+# Run tests
 poetry run pytest
+
+# Run tests with coverage
+poetry run pytest --cov=deepcast_post --cov-report=term-missing
 
 # Build the package
 poetry build
 ```
+
+Testing configuration is defined under `[tool.pytest.ini_options]` in `pyproject.toml`. See `TESTING.md` for detailed testing documentation.
 
 ## License
 
