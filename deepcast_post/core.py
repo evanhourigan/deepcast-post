@@ -7,7 +7,7 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 class DeepcastGenerator:
     """Generates deepcast breakdowns from diarized transcripts using OpenAI API."""
     
-    def __init__(self, model=None, temperature=None, verbose=False):
+    def __init__(self, model=None, temperature=None, verbose=False, max_tokens=None):
         self.console = Console()
         
         # Load configuration from environment variables with defaults
@@ -15,10 +15,35 @@ class DeepcastGenerator:
         self.temperature = temperature or float(os.getenv("OPENAI_TEMPERATURE", "0.7"))
         self.verbose = verbose
         
+        # Cost guardrails and token limits
+        self.max_tokens = max_tokens or int(os.getenv("OPENAI_MAX_TOKENS", "8000"))
+        self.max_input_tokens = int(os.getenv("OPENAI_MAX_INPUT_TOKENS", "50000"))  # ~40k words
+        
         # Set OpenAI API key
         self.api_key = os.getenv("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError("OPENAI_API_KEY environment variable not set")
+    
+    def estimate_tokens(self, text):
+        """Rough token estimation (1 token ≈ 0.75 words for English text)."""
+        word_count = len(text.split())
+        return int(word_count * 1.33)  # Conservative estimate
+    
+    def validate_transcript_size(self, transcript):
+        """Validate transcript size to prevent excessive costs."""
+        estimated_tokens = self.estimate_tokens(transcript)
+        
+        if estimated_tokens > self.max_input_tokens:
+            raise ValueError(
+                f"Transcript too large: estimated {estimated_tokens:,} tokens "
+                f"(max: {self.max_input_tokens:,}). "
+                f"Consider splitting into smaller segments."
+            )
+        
+        if self.verbose:
+            self.console.print(f"📊 Estimated tokens: {estimated_tokens:,}")
+        
+        return estimated_tokens
     
     def load_transcript(self, transcript_path):
         """Load transcript from file."""
@@ -70,7 +95,8 @@ Here is the diarized transcript:
                     {"role": "system", "content": "You are a senior podcast analyst."},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=self.temperature
+                temperature=self.temperature,
+                max_tokens=self.max_tokens
             )
             return response.choices[0].message.content
         except Exception as e:
@@ -87,6 +113,15 @@ Here is the diarized transcript:
         if self.verbose:
             self.console.print(f"📖 Loading transcript from: {transcript_path}")
         transcript = self.load_transcript(transcript_path)
+        
+        # Validate transcript size
+        if self.verbose:
+            self.console.print(f"🔍 Validating transcript size...")
+        try:
+            self.validate_transcript_size(transcript)
+        except ValueError as e:
+            self.console.print(f"[red]Error: {e}[/red]")
+            return
         
         # Generate breakdown
         if self.verbose:

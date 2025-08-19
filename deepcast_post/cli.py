@@ -16,6 +16,18 @@ load_dotenv(env_path)
 
 console = Console()
 
+def show_cost_warning():
+    """Display cost information to the user."""
+    console.print(Panel(
+        "[yellow]💰 Cost Information:[/yellow]\n"
+        "• Default model: GPT-4o-mini (~$0.004 per transcript)\n"
+        "• GPT-4o: ~$0.11 per transcript\n"
+        "• See COST_GUIDE.md for detailed pricing\n"
+        "• Set OPENAI_MAX_INPUT_TOKENS to limit costs",
+        title="Cost Warning",
+        border_style="yellow"
+    ))
+
 def main():
     parser = argparse.ArgumentParser(
         prog="deepcast",
@@ -27,8 +39,13 @@ def main():
     parser.add_argument("--model", default="gpt-4o-mini", help="OpenAI model to use (default: gpt-4o-mini)")
     parser.add_argument("--temperature", type=float, default=0.7, help="Temperature for generation (default: 0.7)")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
+    parser.add_argument("--no-cost-warning", action="store_true", help="Suppress cost warning")
     
     args = parser.parse_args()
+    
+    # Show cost warning unless suppressed
+    if not args.no_cost_warning:
+        show_cost_warning()
     
     # Validate OpenAI API key
     if not os.getenv("OPENAI_API_KEY"):
